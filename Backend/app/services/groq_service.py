@@ -1,0 +1,32 @@
+import os
+
+from groq import Groq
+from dotenv import load_dotenv
+
+load_dotenv()
+
+client = Groq(
+    api_key=os.getenv("GROQ_API_KEY")
+)
+
+
+def ask_ai(prompt: str) -> str:
+    completion = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    "You are ShikshaMitra AI, a friendly educational tutor "
+                    "for Indian students. Explain concepts simply and clearly."
+                ),
+            },
+            {
+                "role": "user",
+                "content": prompt,
+            },
+        ],
+        temperature=0.4,
+    )
+
+    return completion.choices[0].message.content
