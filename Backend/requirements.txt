@@ -4,9 +4,4 @@ groq
 python-dotenv
 python-multipart
 pydantic
-
-easyocr
-opencv-python-headless
-numpy
-Pillow
 PyMuPDF
