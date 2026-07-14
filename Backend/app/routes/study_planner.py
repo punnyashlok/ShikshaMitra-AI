@@ -146,9 +146,7 @@ Return EXACTLY this structure.
 
     response = ask_ai(prompt)
 
-    print("\n========== STUDY PLAN ==========\n")
-    print(response)
-    print("\n================================\n")
+    
 
     try:
 

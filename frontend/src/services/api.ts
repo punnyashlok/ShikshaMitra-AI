@@ -1,4 +1,4 @@
-const API = "http://127.0.0.1:8000";
+const API = "https://shikshamitra-ai-bnq5.onrender.com";
 
 export async function askAI(message: string) {
   const response = await fetch(`${API}/chat`, {

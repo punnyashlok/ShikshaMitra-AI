@@ -56,7 +56,7 @@ app.add_middleware(
 # Register API Routes
 # ---------------------------------
 app.include_router(chat_router)
-app.include_router(scanner_router)
+#app.include_router(scanner_router)
 app.include_router(quiz_router)
 app.include_router(pdf_router)
 app.include_router(pdf_chat_router)

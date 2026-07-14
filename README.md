@@ -91,7 +91,7 @@ http://localhost:5173
 The backend runs on:
 
 ```
-http://127.0.0.1:8000
+https://shikshamitra-ai-bnq5.onrender.com
 ```
 
 ---

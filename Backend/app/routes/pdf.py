@@ -172,4 +172,4 @@ Return EXACTLY this structure:
         "flashcards": flashcards,
 
         "quiz": quiz,
-    }
+    }where npm

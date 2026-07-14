@@ -25,7 +25,7 @@ export default function Quiz() {
 
     try {
       const quiz = await generateQuiz(topic);
-      console.log("Quiz:", quiz);
+      
 
       setQuestions(quiz);
       setAnswers({});
@@ -55,20 +55,13 @@ export default function Quiz() {
       return;
     }
 
-    console.log("Selected Answers:", answers);
-    console.log("Correct Answers:", questions);
+    
 
     const quizScore = questions.reduce((total, question, index) => {
       const selected = (answers[index] ?? "").trim().toLowerCase();
       const correct = question.answer.trim().toLowerCase();
 
-      console.log(
-        `Q${index + 1}`,
-        "Selected:",
-        selected,
-        "Correct:",
-        correct
-      );
+      
 
       return total + (selected === correct ? 1 : 0);
     }, 0);
