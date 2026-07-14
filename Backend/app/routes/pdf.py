@@ -12,11 +12,13 @@ router = APIRouter(
     tags=["📄 PDF Learning"]
 )
 
+MAX_CHARS = 12000
+
 
 def clean_json(text: str):
-    """
-    Remove markdown code fences and parse JSON.
-    """
+    if not text:
+        return {}
+
     text = (
         text.replace("```json", "")
         .replace("```", "")
@@ -29,9 +31,9 @@ def clean_json(text: str):
 @router.post("/pdf")
 async def explain_pdf(file: UploadFile = File(...)):
 
-    # --------------------------------------------------
-    # Validate Uploaded File
-    # --------------------------------------------------
+    # -----------------------------
+    # Validate File
+    # -----------------------------
     if not file.filename.lower().endswith(".pdf"):
         raise HTTPException(
             status_code=400,
@@ -58,38 +60,47 @@ async def explain_pdf(file: UploadFile = File(...)):
     if not extracted_text.strip():
         raise HTTPException(
             status_code=400,
-            detail="No readable text found in the PDF."
+            detail="No readable text found."
         )
 
-    # --------------------------------------------------
-    # Save PDF for Chat
-    # --------------------------------------------------
+    # -----------------------------
+    # Save Full PDF For Chat
+    # -----------------------------
     save_pdf(extracted_text)
 
-    # --------------------------------------------------
-    # Generate Study Material
-    # --------------------------------------------------
-    study_prompt = f"""
+    # -----------------------------
+    # Limit AI Input Size
+    # -----------------------------
+    ai_text = extracted_text[:MAX_CHARS]
+
+    # -----------------------------
+    # AI Prompt
+    # -----------------------------
+    prompt = f"""
 You are ShikshaMitra AI.
 
-Read the chapter carefully.
+Read the following study material and generate study resources.
 
 Return ONLY valid JSON.
 
-Do NOT wrap the JSON inside markdown.
-Do NOT write any explanation.
+Do not use markdown.
 
 Generate:
 
-1. Study Notes
-2. Exactly 10 Flashcards
-3. Exactly 5 MCQs
+- Short summary
+- 6 key concepts
+- 8 important points
+- 5 difficult terms with meanings
+- 4 real life examples
+- 5 exam tips
+- Exactly 10 flashcards
+- Exactly 5 MCQs
 
-Chapter:
+Text:
 
-{extracted_text}
+{ai_text}
 
-Return EXACTLY this structure:
+Return exactly:
 
 {{
   "notes": {{
@@ -126,38 +137,36 @@ Return EXACTLY this structure:
 }}
 """
 
-    response = ask_ai(study_prompt)
+    ai_response = ask_ai(prompt)
 
-    try:
+    notes = {
+        "summary": "",
+        "key_concepts": [],
+        "important_points": [],
+        "difficult_terms": [],
+        "real_life_examples": [],
+        "exam_tips": [],
+    }
 
-        data = clean_json(response)
+    flashcards = []
+    quiz = []
 
-        notes = data.get("notes", {})
+    if ai_response:
 
-        flashcards = data.get("flashcards", [])
+        try:
 
-        quiz = data.get("quiz", [])
+            data = clean_json(ai_response)
 
-    except Exception as e:
+            notes = data.get("notes", notes)
 
-        print("Combined JSON Error:", e)
+            flashcards = data.get("flashcards", [])
 
-        notes = {
-            "summary": "",
-            "key_concepts": [],
-            "important_points": [],
-            "difficult_terms": [],
-            "real_life_examples": [],
-            "exam_tips": [],
-        }
+            quiz = data.get("quiz", [])
 
-        flashcards = []
+        except Exception as e:
 
-        quiz = []
+            print("JSON Parse Error:", e)
 
-    # --------------------------------------------------
-    # Response
-    # --------------------------------------------------
     return {
         "success": True,
         "message": "PDF processed successfully.",

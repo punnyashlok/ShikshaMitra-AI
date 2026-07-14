@@ -28,16 +28,11 @@ export interface QuizQuestion {
 export interface PDFResponse {
   success: boolean;
   message: string;
-
   filename: string;
   characters: number;
-
   text: string;
-
   notes: StudyNotes;
-
   flashcards: Flashcard[];
-
   quiz: QuizQuestion[];
 }
 
@@ -46,17 +41,35 @@ export async function uploadPDF(
 ): Promise<PDFResponse> {
 
   const formData = new FormData();
-
   formData.append("file", file);
+
+  console.log("Uploading:", file.name);
 
   const response = await fetch(`${API}/pdf`, {
     method: "POST",
     body: formData,
   });
 
+  console.log("Status:", response.status);
+
+  const responseText = await response.text();
+
+  console.log("Raw Response:");
+  console.log(responseText);
+
   if (!response.ok) {
-    throw new Error("Failed to process PDF.");
+    throw new Error(responseText || "Failed to process PDF.");
   }
 
-  return await response.json();
+  try {
+    const data: PDFResponse = JSON.parse(responseText);
+
+    console.log("Parsed Response:");
+    console.log(data);
+
+    return data;
+  } catch (err) {
+    console.error("JSON Parse Error:", err);
+    throw new Error("Backend returned invalid JSON.");
+  }
 }
