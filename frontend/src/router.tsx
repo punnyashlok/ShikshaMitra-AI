@@ -1,6 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 
 import MainLayout from "./components/layouts/MainLayout";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 import Dashboard from "./pages/Dashboard";
 import Tutor from "./pages/Tutor";
@@ -11,10 +12,41 @@ import StudyPlanner from "./pages/StudyPlanner";
 import Progress from "./pages/Progress";
 import Settings from "./pages/Settings";
 
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import ForgotPassword from "./pages/ForgotPassword";
+
 export const router = createBrowserRouter([
+  // ==========================
+  // Authentication Pages
+  // ==========================
+
+  {
+    path: "/login",
+    element: <Login />,
+  },
+
+  {
+    path: "/signup",
+    element: <Signup />,
+  },
+
+  {
+    path: "/forgot-password",
+    element: <ForgotPassword />,
+  },
+
+  // ==========================
+  // Protected Application
+  // ==========================
+
   {
     path: "/",
-    element: <MainLayout />,
+    element: (
+      <ProtectedRoute>
+        <MainLayout />
+      </ProtectedRoute>
+    ),
 
     children: [
       {
